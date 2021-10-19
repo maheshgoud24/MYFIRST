@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<os:object-store name="Object_store" doc:name="Object store" doc:id="5c975aa7-dd37-4a84-9ec8-d018394bafd5" maxEntries="100" entryTtl="4" entryTtlUnit="HOURS" config-ref="ObjectStore_Config" />
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="6a8a1950-fe53-4f89-96da-60e8ce0c84c5" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<os:config name="ObjectStore_Config" doc:name="ObjectStore Config" doc:id="ce1b11da-08d0-4597-9b23-a0287d5bfd1b" >
+		<os:connection >
+			<reconnection failsDeployment="true" >
+				<reconnect />
+			</reconnection>
+		</os:connection>
+	</os:config>
+	<flow name="objectstoreFlow" doc:id="7744f951-078f-4594-a124-88f3f741a68e" >
+		<http:listener doc:name="Listener" doc:id="b750c113-54b4-46a2-9dce-f9907d44193c" config-ref="HTTP_Listener_config" path="/test"/>
+		<os:store doc:name="Store" doc:id="73b5d514-c456-40c3-9159-41187bdae50c" key='#[now() as Strings  {format : "yyyymmdd:hhmmss"}]' objectStore="Object_store" failIfPresent="true"/>
+		<logger level="INFO" doc:name="Logger" doc:id="001ea0d7-0c19-45ff-a3de-eede552f7ce0" message='#["storeddone"]'/>
+	</flow>
+</mule>
